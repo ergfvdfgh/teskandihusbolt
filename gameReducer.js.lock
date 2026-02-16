@@ -1,0 +1,165 @@
+export const initialState = {
+  money: 10,
+  items: [
+    { id: 1, name: "Csrike farhát", tier: 1, buyPrice: 10, sellPrice: 15, stock: 0, upgradeLevel: 0 },
+    { id: 2, name: "Csrike szárny", tier: 1, buyPrice: 15, sellPrice: 18, stock: 0, upgradeLevel: 0 },
+    { id: 3, name: "Csrike comb", tier: 1, buyPrice: 25, sellPrice: 30, stock: 0, upgradeLevel: 0 },
+    { id: 4, name: "Csrike mell", tier: 1, buyPrice: 50, sellPrice: 35, stock: 0, upgradeLevel: 0 },
+    { id: 5, name: "Disznaly tarja", tier: 1, buyPrice: 100, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 6, name: "Disznaly csülök", tier: 1, buyPrice: 200, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 7, name: "Disznaly dagadó", tier: 1, buyPrice: 500, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 8, name: "Disznaly karaj", tier: 1, buyPrice: 1000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 9, name: "Disznaly szüzpecsenye", tier: 1, buyPrice: 2500, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 10, name: "Marha fartő", tier: 1, buyPrice: 10000, sellPrice: 5, stock: 0, upgradeLevel: 0 },
+    { id: 11, name: "Marha szegy eleje", tier: 1, buyPrice: 25000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 12, name: "Marha nyelv", tier: 1, buyPrice: 100000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 13, name: "Marha gömbölyű felsál", tier: 1, buyPrice: 500000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 14, name: "Marha tögy", tier: 1, buyPrice: 1000000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 15, name: "Marha köröm", tier: 1, buyPrice: 3000000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 16, name: "Marha szegy hátulja", tier: 1, buyPrice: 10000000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+    { id: 17, name: "Bika here", tier: 1, buyPrice: 1000000000, sellPrice: 60, stock: 0, upgradeLevel: 0 },
+  ],
+  spreadsheet: Array(10).fill(null).map(() => Array(10).fill({ value: '', formula: '' })),
+  marketConditions: {
+    demand: 1.0,
+    inflation: 1.0,
+    event: null,
+  },
+  day: 1,
+  history: [],
+};
+
+export const actionTypes = {
+  BUY_ITEM: 'BUY_ITEM',
+  SELL_ITEM: 'SELL_ITEM',
+  UPGRADE_ITEM: 'UPGRADE_ITEM',
+  UPDATE_CELL: 'UPDATE_CELL',
+  NEXT_DAY: 'NEXT_DAY',
+  LOAD_GAME: 'LOAD_GAME',
+  SAVE_GAME: 'SAVE_GAME',
+};
+
+export function gameReducer(state, action) {
+  switch (action.type) {
+    case actionTypes.BUY_ITEM: {
+      const { itemId, quantity } = action.payload;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return state;
+      
+      const totalCost = item.buyPrice * quantity;
+      if (state.money < totalCost) return state;
+      
+      return {
+        ...state,
+        money: state.money - totalCost,
+        items: state.items.map(i => 
+          i.id === itemId ? { ...i, stock: i.stock + quantity } : i
+        ),
+        history: [...state.history, {
+          type: 'BUY',
+          item: item.name,
+          quantity,
+          cost: totalCost,
+          day: state.day,
+        }],
+      };
+    }
+    
+    case actionTypes.SELL_ITEM: {
+      const { itemId, quantity } = action.payload;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item || item.stock < quantity) return state;
+      
+      const totalRevenue = item.sellPrice * quantity;
+      
+      return {
+        ...state,
+        money: state.money + totalRevenue,
+        items: state.items.map(i => 
+          i.id === itemId ? { ...i, stock: i.stock - quantity } : i
+        ),
+        history: [...state.history, {
+          type: 'SELL',
+          item: item.name,
+          quantity,
+          revenue: totalRevenue,
+          day: state.day,
+        }],
+      };
+    }
+    
+    case actionTypes.UPGRADE_ITEM: {
+      const { itemId } = action.payload;
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return state;
+      
+      const upgradeCost = 100 * (item.upgradeLevel + 1);
+      if (state.money < upgradeCost) return state;
+      
+      return {
+        ...state,
+        money: state.money - upgradeCost,
+        items: state.items.map(i => 
+          i.id === itemId ? { 
+            ...i, 
+            upgradeLevel: i.upgradeLevel + 1,
+            buyPrice: Math.floor(i.buyPrice * 0.95),
+            sellPrice: Math.floor(i.sellPrice * 1.1),
+          } : i
+        ),
+        history: [...state.history, {
+          type: 'UPGRADE',
+          item: item.name,
+          level: item.upgradeLevel + 1,
+          cost: upgradeCost,
+          day: state.day,
+        }],
+      };
+    }
+    
+    case actionTypes.UPDATE_CELL: {
+      const { row, col, value, formula } = action.payload;
+      const newSpreadsheet = [...state.spreadsheet];
+      newSpreadsheet[row] = [...newSpreadsheet[row]];
+      newSpreadsheet[row][col] = { value, formula };
+      
+      return {
+        ...state,
+        spreadsheet: newSpreadsheet,
+      };
+    }
+    
+    case actionTypes.NEXT_DAY: {
+      const newMarketConditions = {
+        demand: 0.8 + Math.random() * 0.4,
+        inflation: 0.9 + Math.random() * 0.2,
+        event: Math.random() > 0.7 ? 'GOOD_WEATHER' : Math.random() > 0.8 ? 'BAD_WEATHER' : null,
+      };
+      
+      const updatedItems = state.items.map(item => ({
+        ...item,
+        buyPrice: Math.floor(item.buyPrice * newMarketConditions.inflation),
+        sellPrice: Math.floor(item.sellPrice * newMarketConditions.demand),
+      }));
+      
+      return {
+        ...state,
+        day: state.day + 1,
+        marketConditions: newMarketConditions,
+        items: updatedItems,
+        history: [...state.history, {
+          type: 'NEXT_DAY',
+          day: state.day + 1,
+          marketChange: newMarketConditions,
+        }],
+      };
+    }
+    
+    case actionTypes.LOAD_GAME: {
+      return action.payload;
+    }
+    
+    default:
+      return state;
+  }
+}
