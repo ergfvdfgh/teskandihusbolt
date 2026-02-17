@@ -24,7 +24,7 @@ export default function ItemCard({ item }) {
         upgradeItem(item.id);
     };
 
-    const canUpgrade = state.money >= 100 * (item.upgradeLevel + 1);
+    const canUpgrade = state.money >= Math.round(item.sellPrice ** 1.1);
 
     return (
         <div className={`border rounded-lg p-4 bg-blue-300/70`}>
@@ -115,7 +115,7 @@ export default function ItemCard({ item }) {
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                 >
-                    Upgrade ({100 * (item.upgradeLevel + 1)} Ft)
+                    Upgrade ({Math.round(item.sellPrice ** 1.1)} Ft)
                 </button>
             </div>
         </div>

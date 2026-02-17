@@ -36,7 +36,7 @@ export function GameProvider({ children }) {
     };
 
     const resetGame = () => {
-        dispatch({ type: actionTypes.LOAD_GAME, payload: initialState });
+        dispatch({ type: actionTypes.LOAD_GAME, payload: { initialState } });
     };
 
     const value = {
@@ -52,7 +52,7 @@ export function GameProvider({ children }) {
         <GameContext.Provider value={value}>{children}</GameContext.Provider>
     );
 }
-
+/* eslint-disable-next-line react-refresh/only-export-components */
 export function useGame() {
     const context = useContext(GameContext);
     if (!context) {

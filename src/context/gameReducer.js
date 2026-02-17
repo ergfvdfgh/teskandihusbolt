@@ -155,14 +155,6 @@ export const initialState = {
             lastUpgradeCost: 100000000000,
         },
     ],
-    spreadsheet: Array(10)
-        .fill(null)
-        .map(() => Array(10).fill({ value: "", formula: "" })),
-    marketConditions: {
-        demand: 1.0,
-        inflation: 1.0,
-        event: null,
-    },
 };
 
 export const actionTypes = {
@@ -191,16 +183,6 @@ export function gameReducer(state, action) {
                 items: state.items.map((i) =>
                     i.id === itemId ? { ...i, stock: i.stock + quantity } : i,
                 ),
-                history: [
-                    ...state.history,
-                    {
-                        type: "BUY",
-                        item: item.name,
-                        quantity,
-                        cost: totalCost,
-                        day: state.day,
-                    },
-                ],
             };
         }
 
@@ -217,16 +199,6 @@ export function gameReducer(state, action) {
                 items: state.items.map((i) =>
                     i.id === itemId ? { ...i, stock: i.stock - quantity } : i,
                 ),
-                history: [
-                    ...state.history,
-                    {
-                        type: "SELL",
-                        item: item.name,
-                        quantity,
-                        revenue: totalRevenue,
-                        day: state.day,
-                    },
-                ],
             };
         }
 
@@ -235,7 +207,7 @@ export function gameReducer(state, action) {
             const item = state.items.find((i) => i.id === itemId);
             if (!item) return state;
 
-            const upgradeCost = 100 * (item.upgradeLevel * 10);
+            const upgradeCost = Math.round(item.sellPrice ** 1.1);
             if (state.money < upgradeCost) return state;
 
             return {
@@ -254,16 +226,8 @@ export function gameReducer(state, action) {
             };
         }
 
-        case actionTypes.UPDATE_CELL: {
-            const { row, col, value, formula } = action.payload;
-            const newSpreadsheet = [...state.spreadsheet];
-            newSpreadsheet[row] = [...newSpreadsheet[row]];
-            newSpreadsheet[row][col] = { value, formula };
-
-            return {
-                ...state,
-                spreadsheet: newSpreadsheet,
-            };
+        case actionTypes.LOAD_GAME: {
+            return initialState;
         }
     }
 }

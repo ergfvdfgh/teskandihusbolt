@@ -1,12 +1,13 @@
 import { GameProvider } from "./context/GameContext";
 import ItemCard from "./components/ItemCard";
 import { useGame } from "./context/GameContext";
+import { useState, useEffect } from "react";
 
 function GameHeader() {
     const { state } = useGame();
 
     return (
-        <header className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-4 rounded-b-lg shadow-lg">
+        <header className="sticky top-0 bg-linear-to-r from-blue-600 to-purple-600 text-white p-4 rounded-b-lg shadow-lg">
             <div className="container mx-auto">
                 <div className="flex justify-between items-center">
                     <div>
@@ -30,47 +31,76 @@ function MainGame() {
     const { state, resetGame } = useGame();
 
     return (
-        <div className="container mx-auto px-4 py-6">
-            <div className="grid grid-cols-3 lg:grid-cols-5">
-                {/* Bal oldal: Itemek és Piac */}
-                <div className="lg:col-span-4 space-y-6">
+        <>
+            <div
+                className={
+                    "container mx-auto px-4 py-6 w-[70%] bg-slate-600/90"
+                }
+            >
+                <div className="grid grid-cols-3 lg:grid-cols-5">
+                    {/* Bal oldal: Itemek és Piac */}
+                    <div className="lg:col-span-4 space-y-6">
+                        <div>
+                            <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                                {state.items.map((item) => (
+                                    <ItemCard key={item.id} item={item} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                            Termékek
-                        </h2>
-                        <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                            {state.items.map((item) => (
-                                <ItemCard key={item.id} item={item} />
-                            ))}
+                        <div
+                            className={
+                                "ml-4 border rounded-lg p-4 bg-blue-300/70"
+                            }
+                        >
+                            <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-lg font-bold">
+                                    {state.customersPerTick}
+                                </h3>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
-                    <div className={`border rounded-lg p-4 bg-blue-300/70`}>
-                        <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-lg font-bold">
-                                {state.customersPerTick}
-                            </h3>
-                        </div>
+                    <div className="float-right">
+                        <button
+                            onClick={resetGame}
+                            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-xl font-medium transition my-10 text-right"
+                        >
+                            Játék újraindítása
+                        </button>
                     </div>
                 </div>
             </div>
-            <div className="float-right">
-                <button
-                    onClick={resetGame}
-                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-xl font-medium transition my-10 text-right"
-                >
-                    Játék újraindítása
-                </button>
-            </div>
-        </div>
+        </>
     );
 }
 
 function App() {
+    const [jsonData, setJsonData] = useState();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(
+                    "https://api.nekosapi.com/v4/images/random?rating=safe",
+                );
+                const result = await response.json();
+                setJsonData(result);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const catGirl = jsonData ? jsonData[0].url : <span>Loading track...</span>;
     return (
         <GameProvider>
-            <div className="min-h-screen bg-linear-to-b from-gray-100 to-gray-200">
+            <div
+                className={"min-h-screen bg-contain"}
+                style={{ backgroundImage: `url(${catGirl})` }}
+            >
                 <GameHeader />
                 <MainGame />
             </div>
