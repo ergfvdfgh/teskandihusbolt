@@ -28,12 +28,7 @@ export function GameProvider({ children }) {
         dispatch({ type: actionTypes.UPGRADE_ITEM, payload: { itemId } });
     };
 
-    const updateCell = (row, col, value, formula = "") => {
-        dispatch({
-            type: actionTypes.UPDATE_CELL,
-            payload: { row, col, value, formula },
-        });
-    };
+
 
     const resetGame = () => {
         dispatch({ type: actionTypes.LOAD_GAME, payload: { initialState } });
@@ -44,7 +39,6 @@ export function GameProvider({ children }) {
         buyItem,
         sellItem,
         upgradeItem,
-        updateCell,
         resetGame,
     };
 

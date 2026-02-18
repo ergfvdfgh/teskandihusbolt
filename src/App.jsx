@@ -1,25 +1,33 @@
 import { GameProvider } from "./context/GameContext";
 import ItemCard from "./components/ItemCard";
 import { useGame } from "./context/GameContext";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 function GameHeader() {
-    const { state } = useGame();
+    const { state, resetGame } = useGame();
 
     return (
-        <header className="sticky top-0 bg-linear-to-r from-blue-600 to-purple-600 text-white p-4 rounded-b-lg shadow-lg">
+        <header className="sticky top-0 bg-white text-black p-4 shadow-lg">
             <div className="container mx-auto">
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold">
-                            Teskandi husbolt szimulator
+                            Teskándi húsbolt szimulátor
                         </h1>
                     </div>
-                    <div className="text-right">
-                        <div className="text-2xl font-bold">
-                            {new Intl.NumberFormat("hu-HU").format(state.money)}{" "}
-                            Ft
+                    <div className="flex items-center gap-4">
+                        <div className="text-right">
+                            <div className="text-2xl font-bold">
+                                {new Intl.NumberFormat("hu-HU").format(state.money)}{" "}
+                                Ft
+                            </div>
                         </div>
+                        <button
+                            onClick={resetGame}
+                            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 cursor-pointer rounded text-xl font-medium transition"
+                        >
+                            Játék újraindítása
+                        </button>
                     </div>
                 </div>
             </div>
@@ -28,7 +36,7 @@ function GameHeader() {
 }
 
 function MainGame() {
-    const { state, resetGame } = useGame();
+    const { state } = useGame();
 
     return (
         <>
@@ -37,37 +45,11 @@ function MainGame() {
                     "container mx-auto px-4 py-6 w-full md:w-[70%] bg-slate-600/90"
                 }
             >
-                <div className="grid grid-cols-3 lg:grid-cols-5">
-                    {/* Bal oldal: Itemek és Piac */}
-                    <div className="lg:col-span-4 space-y-6">
-                        <div>
-                            <div className="grid grid-cols-[repeat(auto-fit,minmax(256px,1fr))] gap-4">
-                                {state.items.map((item) => (
-                                    <ItemCard key={item.id} item={item} />
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div
-                            className={
-                                "ml-4 border rounded-lg p-4 bg-blue-300/70"
-                            }
-                        >
-                            <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-lg font-bold">
-                                    {state.customersPerTick}
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="float-right">
-                        <button
-                            onClick={resetGame}
-                            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-xl font-medium transition my-10 text-right"
-                        >
-                            Játék újraindítása
-                        </button>
+                <div>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(256px,1fr))] gap-4">
+                        {state.items.map((item) => (
+                            <ItemCard key={item.id} item={item} />
+                        ))}
                     </div>
                 </div>
             </div>
@@ -76,43 +58,23 @@ function MainGame() {
 }
 
 function App() {
-    const [backgroundImageUrl, setBackgroundImageUrl] = useState("");
     const [expandedImageUrl, setExpandedImageUrl] = useState("");
     const [isGoonCornerExpanded, setIsGoonCornerExpanded] = useState(() => {
         const cached = localStorage.getItem("tierTradeGame_goonCornerExpanded");
         return cached ? JSON.parse(cached) : false;
     });
     const [isExpandedImageLoaded, setIsExpandedImageLoaded] = useState(false);
-    const [isBackgroundImageLoaded, setIsBackgroundImageLoaded] = useState(false);
+    const hasFetchedExpandedImage = useRef(false);
 
-    const loadBackgroundImage = useCallback(() => {
-        fetch("https://api.nekosapi.com/v4/images/random?rating=safe")
-            .then(response => response.json())
-            .then(result => {
-                const url = result[0]?.url;
-                if (url) {
-                    const img = new Image();
-                    img.onload = () => {
-                        setBackgroundImageUrl(url);
-                        setIsBackgroundImageLoaded(true);
-                    };
-                    img.onerror = () => {
-                        console.error("Failed to load background image");
-                        setIsBackgroundImageLoaded(true);
-                    };
-                    img.src = url;
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching background image:", error);
-                setIsBackgroundImageLoaded(true);
-            });
-    }, []);
+
 
     const loadExpandedImage = useCallback(() => {
+        if (hasFetchedExpandedImage.current) {
+            return;
+        }
+        hasFetchedExpandedImage.current = true;
         setIsExpandedImageLoaded(false);
-        setExpandedImageUrl("");
-        fetch("https://api.nekosapi.com/v4/images/random?rating=safe")
+        fetch("https://api.nekosapi.com/v4/images/random?rating=suggestive")
             .then(response => response.json())
             .then(result => {
                 const url = result[0]?.url;
@@ -136,36 +98,27 @@ function App() {
     }, []);
 
     useEffect(() => {
-        loadBackgroundImage();
-        
-        if (isGoonCornerExpanded) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            loadExpandedImage();
-        }
-    }, [loadBackgroundImage, loadExpandedImage]); // eslint-disable-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadExpandedImage();
+    }, [loadExpandedImage]);
 
     const handleToggleGoonCorner = () => {
         const newExpandedState = !isGoonCornerExpanded;
         setIsGoonCornerExpanded(newExpandedState);
         localStorage.setItem("tierTradeGame_goonCornerExpanded", JSON.stringify(newExpandedState));
-        
-        if (newExpandedState) {
-            loadExpandedImage();
-        } else {
-            setExpandedImageUrl("");
-            setIsExpandedImageLoaded(false);
-        }
     };
+
+    const isLoading = isGoonCornerExpanded && !isExpandedImageLoaded;
 
     return (
         <GameProvider>
             <div className="relative min-h-screen bg-gray-900">
+                {isLoading && (
+                    <div className="fixed inset-0 z-50 bg-gray-900">
+                    </div>
+                )}
                 <div
-                    className="absolute inset-0 bg-contain transition-opacity duration-700"
-                    style={{
-                        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : 'none',
-                        opacity: isBackgroundImageLoaded ? 1 : 0
-                    }}
+                    className="absolute inset-0 bg-repeat bg-[url('https://i.postimg.cc/26RXR6gp/teskandi.jpg')]"
                 />
                 <div className="relative z-10">
                     <GameHeader />
@@ -189,13 +142,9 @@ function App() {
                     )}
                     <button
                         onClick={handleToggleGoonCorner}
-                        className="text-xl cursor-pointer rounded-full bg-red-500 hover:bg-red-800 text-white p-4"
+                        className="text-xl cursor-pointer underline bg-red-500 hover:bg-red-800 text-white p-4"
                     >
-                        {isGoonCornerExpanded ? (
-                            <span>Disable goon corner</span>
-                        ) : (
-                            <span>Enable goon corner</span>
-                        )}
+                        <span>goon corner</span>
                     </button>
                 </div>
             </div>

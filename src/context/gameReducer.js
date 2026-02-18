@@ -161,10 +161,7 @@ export const actionTypes = {
     BUY_ITEM: "BUY_ITEM",
     SELL_ITEM: "SELL_ITEM",
     UPGRADE_ITEM: "UPGRADE_ITEM",
-    UPDATE_CELL: "UPDATE_CELL",
-    NEXT_DAY: "NEXT_DAY",
     LOAD_GAME: "LOAD_GAME",
-    SAVE_GAME: "SAVE_GAME",
 };
 
 export function gameReducer(state, action) {

@@ -76,7 +76,7 @@ export default function ItemCard({ item }) {
                     <button
                         onClick={handleBuy}
                         disabled={state.money < item.buyPrice}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm font-medium transition"
+                         className="flex-1 bg-red-500 hover:bg-red-600 text-white cursor-pointer py-1 px-3 rounded text-sm font-medium transition"
                     >
                         Vásárlás ({buyQuantity * item.buyPrice} Ft)
                     </button>
@@ -96,11 +96,11 @@ export default function ItemCard({ item }) {
                     <button
                         onClick={handleSell}
                         disabled={item.stock === 0}
-                        className={`flex-1 py-1 px-3 rounded text-sm font-medium transition ${
-                            item.stock === 0
-                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-green-500 hover:bg-green-600 text-white"
-                        }`}
+                         className={`flex-1 py-1 px-3 rounded text-sm font-medium transition ${
+                             item.stock === 0
+                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                 : "bg-green-500 hover:bg-green-600 text-white"
+                         }`}
                     >
                         Eladás (+{sellQuantity * item.sellPrice} Ft)
                     </button>
@@ -109,11 +109,11 @@ export default function ItemCard({ item }) {
                 <button
                     onClick={handleUpgrade}
                     disabled={!canUpgrade}
-                    className={`w-full py-2 px-3 rounded text-sm font-medium transition ${
-                        canUpgrade
-                            ? "bg-purple-500 hover:bg-purple-600 text-white"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
+                     className={`w-full py-2 px-3 rounded text-sm font-medium transition ${
+                         canUpgrade
+                             ? "bg-purple-500 hover:bg-purple-600 text-white"
+                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                     }`}
                 >
                     Upgrade ({Math.round(item.sellPrice ** 1.1)} Ft)
                 </button>
