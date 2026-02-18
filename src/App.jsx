@@ -94,13 +94,59 @@ function App() {
         fetchData();
     }, []);
 
-    const catGirl = jsonData ? jsonData[0].url : <span>Loading track...</span>;
+    const catGirl = jsonData ? (
+        jsonData[0].url
+    ) : (
+        <span>Loading catgirl...</span>
+    );
+
+    const [expCatGirl, setExpCatGirl] = useState("");
+
+    const getExpCatGirl = useEffect(() => {
+        const fetchExpCatGirl = async () => {
+            try {
+                const response = await fetch(
+                    "https://api.nekosapi.com/v4/images/random?rating=safe",
+                );
+                const result = await response.json();
+                setExpCatGirl(result);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchExpCatGirl();
+    }, []);
+
+    console.log(
+        expCatGirl ? expCatGirl[0].url : <span>Loading catgirl...</span>,
+    );
+    console.log(getExpCatGirl);
+
+    const handleClick = () => {
+        expCatGirl === ""
+            ? (getExpCatGirl(), console.log("set"))
+            : (setExpCatGirl(""), console.log("unset"));
+    };
     return (
         <GameProvider>
             <div
                 className={"min-h-screen bg-contain"}
                 style={{ backgroundImage: `url(${catGirl})` }}
             >
+                <div>
+                    <button
+                        onClick={handleClick}
+                        className="text-xl rounded-full bg-red-500 hover:bg-red-800"
+                    >
+                        {expCatGirl ? (
+                            <span className="p-5">Disable goon corner</span>
+                        ) : (
+                            <span className="p-5">Enable goon corner</span>
+                        )}
+                    </button>
+                </div>
+                {expCatGirl ? <img src={expCatGirl[0].url} alt="" /> : "asd"}
                 <GameHeader />
                 <MainGame />
             </div>
