@@ -74,12 +74,14 @@ function App() {
         }
         hasFetchedExpandedImage.current = true;
         setIsExpandedImageLoaded(false);
-        fetch("https://api.nekosapi.com/v4/images/random?rating=suggestive")
+        console.log(fetch("/v4/images/random?rating=suggestive"))
+        fetch("/v4/images/random?rating=suggestive")
             .then(response => response.json())
             .then(result => {
                 const url = result[0]?.url;
                 if (url) {
                     const img = new Image();
+                    console.log(url.blob())
                     img.onload = () => {
                         setExpandedImageUrl(url);
                         setIsExpandedImageLoaded(true);
@@ -91,6 +93,7 @@ function App() {
                     img.src = url;
                 }
             })
+            
             .catch(error => {
                 console.error("Error fetching expanded image:", error);
                 setIsExpandedImageLoaded(true);
