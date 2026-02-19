@@ -1,7 +1,7 @@
 import { GameProvider } from "./context/GameContext";
 import ItemCard from "./components/ItemCard";
 import { useGame } from "./context/GameContext";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState } from "react";
 
 function GameHeader() {
     const { state, resetGame } = useGame();
@@ -57,54 +57,34 @@ function MainGame() {
     );
 }
 
-function App() {
-    const [expandedImageUrl, setExpandedImageUrl] = useState("");
+function BankruptcyScreen({ resetGame }) {
+    return (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+            <div className="bg-white text-black p-8 rounded-lg max-w-md mx-4 text-center">
+                <h2 className="text-3xl font-bold mb-4 text-red-600">Csődbe mentél!</h2>
+                <button
+                    onClick={resetGame}
+                    className="bg-red-500 hover:bg-red-600 text-white py-3 px-6 cursor-pointer rounded text-xl font-medium transition"
+                >
+                    Játék újraindítása
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function GameContent() {
+    const { state, resetGame } = useGame();
     const [isGoonCornerExpanded, setIsGoonCornerExpanded] = useState(() => {
         const cached = localStorage.getItem("tierTradeGame_goonCornerExpanded");
         return cached ? JSON.parse(cached) : false;
     });
-    const [isExpandedImageLoaded, setIsExpandedImageLoaded] = useState(false);
-    const hasFetchedExpandedImage = useRef(false);
+
+    const minBuyPrice = Math.min(...state.items.map(item => item.buyPrice));
+    const hasAnyStock = state.items.some(item => item.stock > 0);
+    const isBankrupt = state.money < minBuyPrice && !hasAnyStock;
 
 
-
-    const loadExpandedImage = useCallback(() => {
-        if (hasFetchedExpandedImage.current) {
-            return;
-        }
-        hasFetchedExpandedImage.current = true;
-        setIsExpandedImageLoaded(false);
-        fetch("/nekosapi/v4/images/random?rating=suggestive")
-            .then(response => response.json())
-            .then(result => {
-                const url = result[0]?.url;
-                if (url) {
-                    const img = new Image();
-                    
-                    img.onload = () => {
-                        setExpandedImageUrl(url);
-                        setIsExpandedImageLoaded(true);
-                    };
-                    img.onerror = () => {
-                        console.error("Failed to load expanded image");
-                        setIsExpandedImageLoaded(true);
-                    };
-                    img.src = url;
-                }
-            })
-            
-            .catch(error => {
-                console.error("Error fetching expanded image:", error);
-                setIsExpandedImageLoaded(true);
-            });
-    }, []);
-
-    useEffect(() => {
-        if (isGoonCornerExpanded) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            loadExpandedImage();
-        }
-    }, [isGoonCornerExpanded, loadExpandedImage]);
 
     const handleToggleGoonCorner = () => {
         const newExpandedState = !isGoonCornerExpanded;
@@ -112,46 +92,44 @@ function App() {
         localStorage.setItem("tierTradeGame_goonCornerExpanded", JSON.stringify(newExpandedState));
     };
 
-    const isLoading = isGoonCornerExpanded && !isExpandedImageLoaded;
+
 
     return (
-        <GameProvider>
-            <div className="relative min-h-screen bg-gray-900">
-                {isLoading && (
-                    <div className="fixed inset-0 z-50 bg-gray-900">
+        <div className="relative min-h-screen bg-gray-900">
+
+            {isBankrupt && <BankruptcyScreen resetGame={resetGame} />}
+            <div
+                className="absolute inset-0 bg-repeat bg-[url('https://i.postimg.cc/26RXR6gp/teskandi.jpg')]"
+            />
+            <div className="relative z-10">
+                <GameHeader />
+                <MainGame />
+            </div>
+            <div className="fixed bottom-4 right-4 z-20 flex flex-col items-end space-y-2">
+                {isGoonCornerExpanded && (
+                    <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2">
+                        <img 
+                            src="catgirlimg.webp" 
+                            alt="" 
+                            className="max-w-sm max-h-80 rounded"
+                        />
                     </div>
                 )}
-                <div
-                    className="absolute inset-0 bg-repeat bg-[url('https://i.postimg.cc/26RXR6gp/teskandi.jpg')]"
-                />
-                <div className="relative z-10">
-                    <GameHeader />
-                    <MainGame />
-                </div>
-                <div className="fixed bottom-4 right-4 z-20 flex flex-col items-end space-y-2">
-                    {isGoonCornerExpanded && (
-                        <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2">
-                            <img 
-                                src={expandedImageUrl || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"} 
-                                alt="" 
-                                className="transition-opacity duration-500 max-w-sm max-h-80 rounded"
-                                style={{ opacity: isExpandedImageLoaded ? 1 : 0 }}
-                                onLoad={() => setIsExpandedImageLoaded(true)}
-                                onError={() => setIsExpandedImageLoaded(true)}
-                            />
-                            {!isExpandedImageLoaded && expandedImageUrl && (
-                                <span className="text-white">Loading...</span>
-                            )}
-                        </div>
-                    )}
-                    <button
-                        onClick={handleToggleGoonCorner}
-                        className="text-xl cursor-pointer underline bg-red-500 hover:bg-red-800 text-white p-4"
-                    >
-                        <span>goon corner</span>
-                    </button>
-                </div>
+                <button
+                    onClick={handleToggleGoonCorner}
+                    className="text-xl cursor-pointer underline bg-red-500 hover:bg-red-800 text-white p-4"
+                >
+                    <span>goon corner</span>
+                </button>
             </div>
+        </div>
+    );
+}
+
+function App() {
+    return (
+        <GameProvider>
+            <GameContent />
         </GameProvider>
     );
 }
