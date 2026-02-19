@@ -14,6 +14,7 @@ function GameHeader() {
                         <h1 className="text-3xl font-bold">
                             Teskándi húsbolt szimulátor
                         </h1>
+                        <a class="bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-[20px] text-transparent bg-clip-text">Link a repohoz</a>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="text-right">
@@ -109,7 +110,7 @@ function GameContent() {
                 {isGoonCornerExpanded && (
                     <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2">
                         <img 
-                            src="catgirlimg.webp" 
+                            src="./catgirlimg.webp" 
                             alt="" 
                             className="max-w-sm max-h-80 rounded"
                         />
