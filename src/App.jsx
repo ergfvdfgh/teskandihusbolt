@@ -14,7 +14,7 @@ function GameHeader() {
                         <h1 className="text-3xl font-bold">
                             Teskándi húsbolt szimulátor
                         </h1>
-                        <a class="bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-[20px] text-transparent bg-clip-text">Link a repohoz</a>
+                        <a className="bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-[20px] text-transparent bg-clip-text" target="_blank" href="https://github.com/ergfvdfgh/teskandihusbolt">Link a repohoz</a>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="text-right">
