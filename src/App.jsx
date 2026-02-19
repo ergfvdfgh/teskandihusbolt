@@ -74,14 +74,13 @@ function App() {
         }
         hasFetchedExpandedImage.current = true;
         setIsExpandedImageLoaded(false);
-        console.log(fetch("/v4/images/random?rating=suggestive"))
-        fetch("/v4/images/random?rating=suggestive")
+        fetch("/nekosapi/v4/images/random?rating=suggestive")
             .then(response => response.json())
             .then(result => {
                 const url = result[0]?.url;
                 if (url) {
                     const img = new Image();
-                    console.log(url.blob())
+                    
                     img.onload = () => {
                         setExpandedImageUrl(url);
                         setIsExpandedImageLoaded(true);
@@ -101,9 +100,11 @@ function App() {
     }, []);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        loadExpandedImage();
-    }, [loadExpandedImage]);
+        if (isGoonCornerExpanded) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            loadExpandedImage();
+        }
+    }, [isGoonCornerExpanded, loadExpandedImage]);
 
     const handleToggleGoonCorner = () => {
         const newExpandedState = !isGoonCornerExpanded;

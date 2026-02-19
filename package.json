@@ -8,12 +8,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.5",
     "bun": "^1.3.9",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "install": "^0.13.0",
     "nekosapi": "^0.7.0",
     "npm": "^11.10.0",
