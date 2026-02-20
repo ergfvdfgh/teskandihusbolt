@@ -5,14 +5,14 @@ export default function ItemCard({ item }) {
     const { buyItem, sellItem, upgradeItem, state } = useGame();
     const [buyQuantity, setBuyQuantity] = useState(1);
     const [sellQuantity, setSellQuantity] = useState(1);
-
+    const penzcsoroges = new Audio("/assets/coin.mp3");
     const handleBuy = () => {
         if (buyQuantity > 0) {
             buyItem(item.id, buyQuantity);
             setBuyQuantity(1);
+            penzcsoroges.play();
         }
     };
-
     const handleSell = () => {
         if (sellQuantity > 0 && sellQuantity <= item.stock) {
             sellItem(item.id, sellQuantity);

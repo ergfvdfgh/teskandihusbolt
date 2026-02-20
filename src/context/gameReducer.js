@@ -5,7 +5,7 @@ export const initialState = {
             id: 1,
             name: "Csrike farhát",
             buyPrice: 10,
-            originalBuyPrice: 10,
+            originalBuyPrice: 1,
             sellPrice: 15,
             stock: 0,
             upgradeLevel: 1,
