@@ -2,6 +2,7 @@ import { GameProvider } from "./context/GameContext";
 import ItemCard from "./components/ItemCard";
 import { useGame } from "./context/GameContext";
 import { useState, useEffect } from "react";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 
 function GameHeader() {
     const { state, resetGame } = useGame();
@@ -91,6 +92,9 @@ function CsodbeMentel({ resetGame }) {
 function GameContent() {
     const { state, resetGame, sellItem } = useGame();
 
+    const [open, setOpen] = useState(false);
+    const [vinceHasPoppedup, setVinceHasPoppedup] = useState(false);
+
     const minBuyPrice = Math.min(...state.items.map((item) => item.buyPrice));
     const hasAnyStock = state.items.some((item) => item.stock > 0);
     const isBankrupt = state.money < minBuyPrice && !hasAnyStock;
@@ -127,6 +131,11 @@ function GameContent() {
     // console.log(influence, "influence");
     const MINUTE_MS = 450;
     var influence = 1;
+    function vinceClose() {
+        setOpen(false);
+        setVinceHasPoppedup(true);
+    }
+
     useEffect(() => {
         const interval = setInterval(() => {
             function randomSell(influence) {
@@ -152,14 +161,50 @@ function GameContent() {
                     );
                 }
             }
+            function checkVince() {
+                state.money > 1000 && !vinceHasPoppedup
+                    ? setOpen(true)
+                    : setOpen;
+            }
             randomSell(influence);
+            checkVince();
+            console.log(open, vinceHasPoppedup);
         }, MINUTE_MS);
 
         return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-    }, [sellItem, state.items, influence]);
+    }, [sellItem, state.items, influence, state.money, open, vinceHasPoppedup]);
     return (
         <div className="relative min-h-screen bg-gray-900">
             {isBankrupt && <CsodbeMentel resetGame={resetGame} />}
+            <Dialog open={open} onClose={vinceClose} className="relative z-10">
+                <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-gray-900/85 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+                />
+
+                <div className="fixed inset-0 z-10 lg:overflow-y-auto lg:mt-auto mt-75">
+                    <div className="flex items-end justify-center lg:p-4 p-1 text-center">
+                        <DialogPanel
+                            transition
+                            className="lg:w-80/100 p-1 relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-2xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+                        >
+                            <div className="bg-gray-800 lg:px-4 lg:pt-5 lg:pb-4 p-0.5 pb-1">
+                                <img src="/assets/vince.png" alt="" />
+                            </div>
+                            <div className="bg-gray-700/25 lg:px-4 lg:py-3 rounded-md">
+                                <button
+                                    type="button"
+                                    data-autofocus
+                                    onClick={vinceClose}
+                                    className="lg:mt-3 lg:mr-80/100 inline-flex w-full justify-center rounded-md bg-white/10 lg:px-3 lg:py-2 lg:text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-white/20"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog>
             <div className="absolute inset-0 bg-repeat bg-[url('https://i.postimg.cc/26RXR6gp/teskandi.jpg')]" />
             <div className="relative z-10">
                 <GameHeader />
