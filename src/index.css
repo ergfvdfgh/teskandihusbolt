@@ -1,12 +1,1 @@
 @import "tailwindcss";
-@theme {
-    --animate-spinout: spinout 5s ease-in;
-    @keyframes spinout {
-        0% {
-            transform: scaleX(0) scaleY(0);
-        }
-        100% {
-            transform: scaleX(1) scaleY(1);
-        }
-    }
-}
