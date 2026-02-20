@@ -4,16 +4,15 @@ class GoonCornerUpdater extends React.Component {
     constructor() {
         super();
         this.handleForceupdateMethod = this.handleForceupdateMethod.bind(this);
-    };
+    }
 
     handleForceupdateMethod() {
         this.forceUpdate();
-    };
+    }
 
-    
     render() {
-        <GoonCorner />
+        return <GoonCorner />;
     }
 }
 
-export default GoonCorner
+export default GoonCornerUpdater;

@@ -1,27 +1,31 @@
 import { useState } from "react";
 import { useGame } from "../context/GameContext";
+import useSound from "../hooks/useSound";
+import { SOUNDS } from "../constants/sounds";
 
 export default function ItemCard({ item }) {
     const { buyItem, sellItem, upgradeItem, state } = useGame();
     const [buyQuantity, setBuyQuantity] = useState(1);
     const [sellQuantity, setSellQuantity] = useState(1);
-    const penzcsoroges = new Audio("/assets/coin.mp3");
+    const playMoneySound = useSound(SOUNDS.PENZ);
     const handleBuy = () => {
         if (buyQuantity > 0) {
             buyItem(item.id, buyQuantity);
             setBuyQuantity(1);
-            penzcsoroges.play();
+            playMoneySound();
         }
     };
     const handleSell = () => {
         if (sellQuantity > 0 && sellQuantity <= item.stock) {
             sellItem(item.id, sellQuantity);
             setSellQuantity(1);
+            playMoneySound();
         }
     };
 
     const handleUpgrade = () => {
         upgradeItem(item.id);
+        playMoneySound();
     };
 
     const canUpgrade = state.money >= Math.round(item.sellPrice ** 1.1);

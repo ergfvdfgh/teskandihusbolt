@@ -1,8 +1,7 @@
 import { GameProvider } from "./context/GameContext";
 import ItemCard from "./components/ItemCard";
 import { useGame } from "./context/GameContext";
-import { useState } from "react";
-import GooncCornerUpdater from "./components/GoonCornerUpdater"
+import GoonCornerUpdater from "./components/GoonCornerUpdater";
 
 function GameHeader() {
     const { state, resetGame } = useGame();
@@ -25,7 +24,7 @@ function GameHeader() {
                             </div>
                         </div>
                         <button
-                            onClick={resetGame}
+                            onClick={() => {resetGame(); }}
                             className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 cursor-pointer rounded text-xl font-medium transition"
                         >
                             Játék újraindítása
@@ -59,13 +58,13 @@ function MainGame() {
     );
 }
 
-function BankruptcyScreen({ resetGame }) {
+function CsodbeMentel({ resetGame }) {
     return (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
             <div className="bg-white text-black p-8 rounded-lg max-w-md mx-4 text-center">
                 <h2 className="text-3xl font-bold mb-4 text-red-600">Csődbe mentél!</h2>
                 <button
-                    onClick={resetGame}
+                    onClick={() => {resetGame(); }}
                     className="bg-red-500 hover:bg-red-600 text-white py-3 px-6 cursor-pointer rounded text-xl font-medium transition"
                 >
                     Játék újraindítása
@@ -85,7 +84,7 @@ function GameContent() {
     return (
         <div className="relative min-h-screen bg-gray-900">
 
-            {isBankrupt && <BankruptcyScreen resetGame={resetGame} />}
+            {isBankrupt && <CsodbeMentel resetGame={resetGame} />}
             <div
                 className="absolute inset-0 bg-repeat bg-[url('https://i.postimg.cc/26RXR6gp/teskandi.jpg')]"
             />
@@ -93,7 +92,7 @@ function GameContent() {
                 <GameHeader />
                 <MainGame />
             </div>
-            <GooncCornerUpdater />
+            <GoonCornerUpdater />
         </div>
     );
 }

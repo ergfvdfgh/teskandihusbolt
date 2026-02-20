@@ -5,7 +5,7 @@ const GameContext = createContext();
 
 export function GameProvider({ children }) {
     const [state, dispatch] = useReducer(gameReducer, initialState, () => {
-        const saved = localStorage.getItem("tierTradeGame");
+        const saved = localStorage.getItem("teskandihusbolt");
         if (!saved) return initialState;
         const parsed = JSON.parse(saved);
         // Migrate items to have originalBuyPrice if missing
@@ -19,7 +19,7 @@ export function GameProvider({ children }) {
     });
 
     useEffect(() => {
-        localStorage.setItem("tierTradeGame", JSON.stringify(state));
+        localStorage.setItem("teskandihusbolt", JSON.stringify(state));
     }, [state]);
 
     const buyItem = (itemId, quantity) => {

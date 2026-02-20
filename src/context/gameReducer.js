@@ -5,7 +5,7 @@ export const initialState = {
             id: 1,
             name: "Csrike farhát",
             buyPrice: 10,
-            originalBuyPrice: 1,
+            originalBuyPrice: 10,
             sellPrice: 15,
             stock: 0,
             upgradeLevel: 1,
@@ -178,7 +178,6 @@ export const actionTypes = {
     BUY_ITEM: "BUY_ITEM",
     SELL_ITEM: "SELL_ITEM",
     UPGRADE_ITEM: "UPGRADE_ITEM",
-    LOAD_GAME: "LOAD_GAME",
 };
 
 export function gameReducer(state, action) {
@@ -232,7 +231,7 @@ export function gameReducer(state, action) {
                         ? {
                                ...i,
                                upgradeLevel: i.upgradeLevel + 1,
-                               buyPrice: Math.max(Math.floor(i.buyPrice * 0.95), Math.floor(i.originalBuyPrice * 0.1)),
+                               buyPrice: Math.max(Math.floor(i.buyPrice * 0.95), Math.floor(i.originalBuyPrice * 0.25)),
                                sellPrice: Math.floor(i.sellPrice * 1.1),
                           }
                         : i,

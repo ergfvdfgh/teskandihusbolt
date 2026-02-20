@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function GoonCorner() {
     const [isGoonCornerExpanded, setIsGoonCornerExpanded] = useState(() => {
-        const cached = localStorage.getItem("tierTradeGame_goonCornerExpanded");
+        const cached = localStorage.getItem("goonCornerState");
         return cached ? JSON.parse(cached) : false;
     });
 
     const handleToggleGoonCorner = () => {
         const newExpandedState = !isGoonCornerExpanded;
         setIsGoonCornerExpanded(newExpandedState);
-        localStorage.setItem("tierTradeGame_goonCornerExpanded", JSON.stringify(newExpandedState));
+        localStorage.setItem("goonCornerState", JSON.stringify(newExpandedState));
     };
 
     return (
