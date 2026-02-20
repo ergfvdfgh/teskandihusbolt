@@ -7,6 +7,7 @@ export const initialState = {
             buyPrice: 10,
             originalBuyPrice: 10,
             sellPrice: 15,
+            originalSellPrice: 15,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 100,
@@ -17,6 +18,7 @@ export const initialState = {
             buyPrice: 15,
             originalBuyPrice: 15,
             sellPrice: 20,
+            originalSellPrice: 20,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 150,
@@ -27,6 +29,7 @@ export const initialState = {
             buyPrice: 25,
             originalBuyPrice: 25,
             sellPrice: 40,
+            originalSellPrice: 40,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 250,
@@ -37,6 +40,7 @@ export const initialState = {
             buyPrice: 50,
             originalBuyPrice: 50,
             sellPrice: 70,
+            originalSellPrice: 70,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 500,
@@ -47,6 +51,7 @@ export const initialState = {
             buyPrice: 100,
             originalBuyPrice: 100,
             sellPrice: 140,
+            originalSellPrice: 140,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 1000,
@@ -57,6 +62,7 @@ export const initialState = {
             buyPrice: 200,
             originalBuyPrice: 200,
             sellPrice: 280,
+            originalSellPrice: 280,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 2000,
@@ -67,6 +73,7 @@ export const initialState = {
             buyPrice: 500,
             originalBuyPrice: 500,
             sellPrice: 750,
+            originalSellPrice: 750,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 5000,
@@ -77,6 +84,7 @@ export const initialState = {
             buyPrice: 1000,
             originalBuyPrice: 1000,
             sellPrice: 1500,
+            originalSellPrice: 1500,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 10000,
@@ -87,6 +95,7 @@ export const initialState = {
             buyPrice: 2500,
             originalBuyPrice: 2500,
             sellPrice: 4300,
+            originalSellPrice: 4300,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCyost: 250000,
@@ -97,6 +106,7 @@ export const initialState = {
             buyPrice: 10000,
             originalBuyPrice: 10000,
             sellPrice: 14000,
+            originalSellPrice: 14000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 1000000,
@@ -107,6 +117,7 @@ export const initialState = {
             buyPrice: 25000,
             originalBuyPrice: 25000,
             sellPrice: 30000,
+            originalSellPrice: 30000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 2500000,
@@ -117,6 +128,7 @@ export const initialState = {
             buyPrice: 100000,
             originalBuyPrice: 100000,
             sellPrice: 120000,
+            originalSellPrice: 120000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 10000000,
@@ -127,6 +139,7 @@ export const initialState = {
             buyPrice: 500000,
             originalBuyPrice: 500000,
             sellPrice: 530000,
+            originalSellPrice: 530000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 500000000,
@@ -137,6 +150,7 @@ export const initialState = {
             buyPrice: 1000000,
             originalBuyPrice: 1000000,
             sellPrice: 1100000,
+            originalSellPrice: 1100000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 100000000,
@@ -147,6 +161,7 @@ export const initialState = {
             buyPrice: 3000000,
             originalBuyPrice: 3000000,
             sellPrice: 3200000,
+            originalSellPrice: 3200000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 300000000,
@@ -157,6 +172,7 @@ export const initialState = {
             buyPrice: 10000000,
             originalBuyPrice: 10000000,
             sellPrice: 10500000,
+            originalSellPrice: 10500000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 1000000000,
@@ -167,10 +183,21 @@ export const initialState = {
             buyPrice: 1000000000,
             originalBuyPrice: 1000000000,
             sellPrice: 1200000000,
+            originalSellPrice: 1200000000,
             stock: 0,
             upgradeLevel: 1,
             lastUpgradeCost: 100000000000,
         },
+        // {
+        //     id: 18,
+        //     name: "Customers per tick",
+        //     buyPrice: 10,
+        //     originalBuyPrice: 10,
+        //     sellPrice: 1,
+        //     stock: 1,
+        //     upgradeLevel: 1,
+        //     lastUpgradeCost: 100,
+        // },
     ],
 };
 
@@ -223,16 +250,46 @@ export function gameReducer(state, action) {
             const upgradeCost = Math.round(item.sellPrice ** 1.1);
             if (state.money < upgradeCost) return state;
 
+            function canUpgrade() {
+                return Math.round(
+                    Math.min(
+                        Math.floor(item.sellPrice * 1.1),
+                        Math.floor(item.originalSellPrice * 10),
+                    ),
+                ) == Math.round(Math.floor(item.originalSellPrice * 10)) &&
+                    Math.round(
+                        Math.max(
+                            Math.floor(item.buyPrice * 0.95),
+                            Math.floor(item.originalBuyPrice * 0.5),
+                        ),
+                    ) == Math.round(Math.floor(item.originalBuyPrice * 0.5))
+                    ? state.money
+                    : state.money - upgradeCost;
+            }
+
             return {
                 ...state,
-                money: state.money - upgradeCost,
+                money: canUpgrade(),
                 items: state.items.map((i) =>
                     i.id === itemId
                         ? {
-                               ...i,
-                               upgradeLevel: i.upgradeLevel + 1,
-                               buyPrice: Math.max(Math.floor(i.buyPrice * 0.95), Math.floor(i.originalBuyPrice * 0.25)),
-                               sellPrice: Math.floor(i.sellPrice * 1.1),
+                              ...i,
+                              upgradeLevel:
+                                  canUpgrade() == state.money
+                                      ? i.upgradeLevel
+                                      : i.upgradeLevel + 1,
+                              buyPrice: Math.round(
+                                  Math.max(
+                                      Math.floor(i.buyPrice * 0.95),
+                                      Math.floor(i.originalBuyPrice * 0.5),
+                                  ),
+                              ),
+                              sellPrice: Math.round(
+                                  Math.min(
+                                      Math.floor(i.sellPrice * 1.1),
+                                      Math.floor(i.originalSellPrice * 10),
+                                  ),
+                              ),
                           }
                         : i,
                 ),

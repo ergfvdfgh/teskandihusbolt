@@ -28,10 +28,25 @@ export default function ItemCard({ item }) {
         playMoneySound();
     };
 
-    const canUpgrade = state.money >= Math.round(item.sellPrice ** 1.1);
+    const canUpgrade =
+        state.money >= Math.round(item.sellPrice ** 1.1) &&
+        !(
+            Math.round(
+                Math.min(
+                    Math.floor(item.sellPrice * 1.1),
+                    Math.floor(item.originalSellPrice * 10),
+                ),
+            ) == Math.round(Math.floor(item.originalSellPrice * 10)) &&
+            Math.round(
+                Math.max(
+                    Math.floor(item.buyPrice * 0.95),
+                    Math.floor(item.originalBuyPrice * 0.5),
+                ),
+            ) == Math.round(Math.floor(item.originalBuyPrice * 0.5))
+        );
 
     return (
-        <div className={`border rounded-lg p-4 bg-blue-300/70`}>
+        <div className={`border rounded-lg p-4 bg-blue-300/70 text-xl`}>
             <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-bold">{item.name}</h3>
                 <span
@@ -80,13 +95,13 @@ export default function ItemCard({ item }) {
                     <button
                         onClick={handleBuy}
                         disabled={state.money < item.buyPrice}
-                         className="flex-1 bg-red-500 hover:bg-red-600 text-white cursor-pointer py-1 px-3 rounded text-sm font-medium transition"
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white cursor-pointer py-1 px-3 rounded text-sm font-medium transition"
                     >
                         Vásárlás ({buyQuantity * item.buyPrice} Ft)
                     </button>
                 </div>
 
-                <div className="flex space-x-2">
+                {/* <div className="flex space-x-2">
                     <input
                         type="number"
                         min="1"
@@ -100,24 +115,24 @@ export default function ItemCard({ item }) {
                     <button
                         onClick={handleSell}
                         disabled={item.stock === 0}
-                         className={`flex-1 py-1 px-3 rounded text-sm font-medium transition ${
-                             item.stock === 0
-                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                 : "bg-green-500 hover:bg-green-600 text-white"
-                         }`}
+                        className={`flex-1 py-1 px-3 rounded text-sm font-medium transition ${
+                            item.stock === 0
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-green-500 hover:bg-green-600 text-white"
+                        }`}
                     >
                         Eladás (+{sellQuantity * item.sellPrice} Ft)
                     </button>
-                </div>
+                </div> */}
 
                 <button
                     onClick={handleUpgrade}
                     disabled={!canUpgrade}
-                     className={`w-full py-2 px-3 rounded text-sm font-medium transition ${
-                         canUpgrade
-                             ? "bg-purple-500 hover:bg-purple-600 text-white"
-                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                     }`}
+                    className={`w-full py-2 px-3 rounded text-sm font-medium transition ${
+                        canUpgrade
+                            ? "bg-purple-500 hover:bg-purple-600 text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
                 >
                     Upgrade ({Math.round(item.sellPrice ** 1.1)} Ft)
                 </button>
