@@ -107,7 +107,7 @@ function GameContent() {
     const [goonImage, setGoonImage] = useState("/assets/catgirlimg.webp");
 
     const getGoonImage = async () => {
-        const res = await fetch("/assets/catgirlimg.webp");
+        const res = await fetch("./catgirlimg.webp");
         const imageBlob = await res.blob();
         const imageObjectURL = URL.createObjectURL(imageBlob);
         setGoonImage(imageObjectURL);
@@ -135,7 +135,7 @@ function GameContent() {
         setOpen(false);
         setVinceHasPoppedup(true);
     }
-
+    function placeholder() {}
     useEffect(() => {
         const interval = setInterval(() => {
             function randomSell(influence) {
@@ -162,7 +162,7 @@ function GameContent() {
                 }
             }
             function checkVince() {
-                state.money > 1000 && !vinceHasPoppedup
+                state.money > 10000 && !vinceHasPoppedup
                     ? setOpen(true)
                     : setOpen;
             }
@@ -176,20 +176,20 @@ function GameContent() {
     return (
         <div className="relative min-h-screen bg-gray-900">
             {isBankrupt && <CsodbeMentel resetGame={resetGame} />}
-            <Dialog open={open} onClose={vinceClose} className="relative z-10">
+            <Dialog open={open} onClose={placeholder} className="relative z-10">
                 <DialogBackdrop
                     transition
                     className="fixed inset-0 bg-gray-900/85 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
                 />
 
-                <div className="fixed inset-0 z-10 lg:overflow-y-auto lg:mt-auto mt-75">
+                <div className="fixed inset-0 z-10 lg:overflow-y-auto lg:mt-auto mt-75 animate-spinout">
                     <div className="flex items-end justify-center lg:p-4 p-1 text-center">
                         <DialogPanel
                             transition
-                            className="lg:w-80/100 p-1 relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-2xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+                            className="p-1 relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-2xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
                         >
                             <div className="bg-gray-800 lg:px-4 lg:pt-5 lg:pb-4 p-0.5 pb-1">
-                                <img src="/assets/vince.png" alt="" />
+                                <img src="./vince.png" alt="" />
                             </div>
                             <div className="bg-gray-700/25 lg:px-4 lg:py-3 rounded-md">
                                 <button
