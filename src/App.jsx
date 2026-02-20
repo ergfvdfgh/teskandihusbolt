@@ -2,6 +2,7 @@ import { GameProvider } from "./context/GameContext";
 import ItemCard from "./components/ItemCard";
 import { useGame } from "./context/GameContext";
 import { useState } from "react";
+import GooncCornerUpdater from "./components/GoonCornerUpdater"
 
 function GameHeader() {
     const { state, resetGame } = useGame();
@@ -76,24 +77,10 @@ function BankruptcyScreen({ resetGame }) {
 
 function GameContent() {
     const { state, resetGame } = useGame();
-    const [isGoonCornerExpanded, setIsGoonCornerExpanded] = useState(() => {
-        const cached = localStorage.getItem("tierTradeGame_goonCornerExpanded");
-        return cached ? JSON.parse(cached) : false;
-    });
-
+    
     const minBuyPrice = Math.min(...state.items.map(item => item.buyPrice));
     const hasAnyStock = state.items.some(item => item.stock > 0);
     const isBankrupt = state.money < minBuyPrice && !hasAnyStock;
-
-
-
-    const handleToggleGoonCorner = () => {
-        const newExpandedState = !isGoonCornerExpanded;
-        setIsGoonCornerExpanded(newExpandedState);
-        localStorage.setItem("tierTradeGame_goonCornerExpanded", JSON.stringify(newExpandedState));
-    };
-
-
 
     return (
         <div className="relative min-h-screen bg-gray-900">
@@ -106,23 +93,7 @@ function GameContent() {
                 <GameHeader />
                 <MainGame />
             </div>
-            <div className="fixed bottom-4 right-4 z-20 flex flex-col items-end space-y-2">
-                {isGoonCornerExpanded && (
-                    <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2">
-                        <img 
-                            src="./catgirlimg.webp" 
-                            alt="" 
-                            className="max-w-sm max-h-80 rounded"
-                        />
-                    </div>
-                )}
-                <button
-                    onClick={handleToggleGoonCorner}
-                    className="text-xl cursor-pointer underline bg-red-500 hover:bg-red-800 text-white p-4"
-                >
-                    <span>goon corner</span>
-                </button>
-            </div>
+            <GooncCornerUpdater />
         </div>
     );
 }
