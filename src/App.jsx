@@ -100,7 +100,7 @@ function GameContent() {
     const isBankrupt = state.money < minBuyPrice && !hasAnyStock;
 
     const [isGoonCornerExpanded, setIsGoonCornerExpanded] = useState(() => {
-        const cached = localStorage.getItem("tierTradeGame_goonCornerExpanded");
+        const cached = localStorage.getItem("teskandihusbolt");
         return cached ? JSON.parse(cached) : false;
     });
 
@@ -117,7 +117,7 @@ function GameContent() {
         const newExpandedState = !isGoonCornerExpanded;
         setIsGoonCornerExpanded(newExpandedState);
         localStorage.setItem(
-            "tierTradeGame_goonCornerExpanded",
+            "teskandihusbolt",
             JSON.stringify(newExpandedState),
         );
         isGoonCornerExpanded ? "" : getGoonImage();

@@ -11,7 +11,7 @@ export default function ItemCard({ item }) {
     const handleBuy = () => {
         if (buyQuantity > 0) {
             buyItem(item.id, buyQuantity);
-            setBuyQuantity(1);
+
             playMoneySound();
         }
     };
@@ -27,6 +27,7 @@ export default function ItemCard({ item }) {
         upgradeItem(item.id);
         playMoneySound();
     };
+    const canBuy = state.money >= item.buyPrice * buyQuantity && buyQuantity > 0;
 
     const canUpgrade =
         state.money >= Math.round(item.sellPrice ** 1.1) &&
@@ -83,19 +84,15 @@ export default function ItemCard({ item }) {
 
             <div className="space-y-3">
                 <div className="flex space-x-2">
-                    <input
-                        type="number"
-                        min="1"
-                        value={buyQuantity}
-                        onChange={(e) =>
-                            setBuyQuantity(parseInt(e.target.value) || 1)
-                        }
-                        className="w-16 px-2 py-1 border rounded text-sm"
-                    />
+                    <input className="w-1/2 accent-indigo-600" type="range" value={buyQuantity} onChange={(e) => setBuyQuantity(parseInt(e.target.value) || 1)} step="3" max="100"></input>
                     <button
                         onClick={handleBuy}
-                        disabled={state.money < item.buyPrice}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white cursor-pointer py-1 px-3 rounded text-sm font-medium transition"
+                        disabled={!canBuy}
+                        className={`flex-1 py-1 px-3 rounded text-sm font-medium transition ${
+                            canBuy
+                                ? "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
                     >
                         Vásárlás ({buyQuantity * item.buyPrice} Ft)
                     </button>
